@@ -1,0 +1,18 @@
+{
+  "name": "excel-data-extractor",
+  "version": "1.0.0",
+  "description": "Node.js project to extract and normalize data from Excel files",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "npm run setup && node src/server.js",
+    "setup": "npm run check-python && npm run create-venv && npm run install-python-deps",
+    "check-python": "node checkPython.js", 
+    "create-venv": "node createVenv.js",
+    "install-python-deps": "venv\\Scripts\\python.exe -m pip install -r src/python_scripts/requirements.txt"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "xlsx": "^0.18.5",
+    "multer": "^1.4.4"
+  }
+}

@@ -1,0 +1,19 @@
+# Node.js modules
+node_modules/
+
+# Python virtual environment
+venv/
+
+# Uploads folder or any other temp directories
+uploads/
+*.log
+
+# Python bytecode
+__pycache__/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Generated files like requirements.txt
+*.pyc
