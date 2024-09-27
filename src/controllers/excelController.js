@@ -2,6 +2,8 @@ const fs = require('fs');
 
 const { processExcelFile } = require('../utils/excelParcer');
 const { convertExcelToJson } = require('../services/excelService');
+const path = require('path');
+const { spawn } = require('child_process');
 
 async function handleExcelUpload(req, res) {
   if (!req.file) {
@@ -39,11 +41,10 @@ const processExcel = async (req, res) => {
 };
 
 const pythonConverter = (req, res) => {
-  const filePath = path.join(__dirname, '..', req.file.path);
-  console.log("filePath for py",filePath)
+  const filePath = path.join(__dirname, '../../', req.file.path);
 
-  const pythonScriptPath = path.join(__dirname, 'python_scripts', 'excel_parse.py');
-  const projectRoot = path.resolve(__dirname, '..');
+  const pythonScriptPath = path.join(__dirname,'..' ,'python_scripts', 'excel_parse.py');
+  const projectRoot = path.resolve(__dirname, '../../');
 
 const pythonExecutable = path.join(projectRoot, 'venv', 'Scripts', 'python.exe');
 
@@ -53,6 +54,7 @@ const pythonExecutable = path.join(projectRoot, 'venv', 'Scripts', 'python.exe')
   let errorToSend = '';
 
   pythonProcess.stdout.on('data', (data) => {
+    console.log("datadata",data)
       dataToSend += data.toString();
   });
 
