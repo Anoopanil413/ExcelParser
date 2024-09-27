@@ -1,7 +1,6 @@
 const { exec } = require('child_process');
 const fs = require('fs');
 
-// Check if the venv folder exists
 if (!fs.existsSync('venv')) {
     console.log("Creating virtual environment...");
     exec('python -m venv venv', (error, stdout, stderr) => {

@@ -19,8 +19,16 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
+// const uploadDir = path.join(__dirname, '../uploads');
+// console.log(uploadDir,"uploadDir")
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir, { recursive: true });
+// }
+
+
+
 module.exports = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 1024 * 1024 * 50 } // 5MB limit
+  limits: { fileSize: 1024 * 1024 * 50 } 
 });

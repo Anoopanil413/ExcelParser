@@ -22,20 +22,14 @@ function parseExcel(filePath) {
 
 function parseValue(value) {
   if (value === undefined || value === null) return null;
-
-  // Try parsing as date
   const dateValue = new Date(value);
   if (!isNaN(dateValue.getTime())) {
     return dateValue.toISOString();
   }
-
-  // Try parsing as number
   const numValue = Number(value);
   if (!isNaN(numValue)) {
     return numValue;
   }
-
-  // Return as string if not a valid date or number
   return value.toString();
 }
 
@@ -51,9 +45,7 @@ const normalizeExcelData = (jsonData) => {
     let rowObj = {};
     headers.forEach((header, index) => {
       let cell = row[index];
-      
-      // Convert cell to string if it's not null or undefined
-      cell = (cell !== null && cell !== undefined) ? String(cell) : null;
+            cell = (cell !== null && cell !== undefined) ? String(cell) : null;
 
       if (header.toLowerCase().includes('date')) {
         if (!rowObj['Dates']) rowObj['Dates'] = {};

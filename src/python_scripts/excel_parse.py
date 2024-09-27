@@ -3,18 +3,15 @@ import pandas as pd
 import json
 
 def process_excel(file_path):
-    print(f"Processing file: {file_path}")  # Log the input file path
+    print(f"Processing file: {file_path}")  
     try:
-        # Read all sheets into a dictionary of DataFrames
         all_sheets = pd.read_excel(file_path, sheet_name=None)
-        print(f"Sheets found: {list(all_sheets.keys())}")  # Log the sheet names
+        print(f"Sheets found: {list(all_sheets.keys())}") 
 
-        # Create a dictionary to hold the JSON data for all sheets
         json_data = {}
 
         for sheet_name, df in all_sheets.items():
-            # Drop datetime columns to avoid serialization issues
-            df = df.select_dtypes(exclude=['datetime'])  # Exclude datetime columns
+            df = df.select_dtypes(exclude=['datetime'])  
             
             # Fill NaN values for object columns
             for col in df.select_dtypes(include=['object']):
