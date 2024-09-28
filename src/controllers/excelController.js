@@ -62,56 +62,71 @@ export const processExcel = async (req, res) => {
 export const pythonConverter = (req, res) => {
   const filePath = path.join(__dirname, '../../', req.file.path);
 
-  const pythonScriptPath = path.join(__dirname,'..' ,'python_scripts', 'excel_parse.py');
+  const pythonScriptPath = path.join(__dirname, '..', 'python_scripts', 'excel_parse.py');
   const projectRoot = path.resolve(__dirname, '../../');
 
-const pythonExecutable = path.join(projectRoot, 'venv', 'Scripts', 'python.exe');
+  const pythonExecutable = path.join(projectRoot, 'venv', 'Scripts', 'python.exe');
 
   const pythonProcess = spawn(pythonExecutable, [pythonScriptPath, filePath]);
 
   let dataToSend = '';
   let errorToSend = '';
 
+  // Capture stdout (Python process output)
   pythonProcess.stdout.on('data', (data) => {
-    console.log("ctual data",data)
-
-      dataToSend += data.toString();
+    console.log("Received stdout chunk:", data.toString());
+    dataToSend += data.toString();
   });
 
+  // Capture stderr (Python process errors)
   pythonProcess.stderr.on('data', (data) => {
-    console.log("datadata",data)
-
-      errorToSend += data.toString();
+    console.error("Received stderr chunk:", data.toString());
+    errorToSend += data.toString();
   });
 
+  // On process close
   pythonProcess.on('close', (code) => {
-    console.log("code",code)
-    if (code === 0) {
-        try {
-            const parsedData = JSON.parse(dataToSend);
-            res.status(200).json({
-                status: 'success',
-                data: parsedData, 
-            });
-        } catch (parseError) {
-            res.status(500).json({
-                status: 'error',
-                message: 'Failed to parse JSON output from Python script.',
-                error: parseError.message,
-                dataReceived: dataToSend,
-            });
-        }
-    } else {
+    console.log("Python process exited with code:", code);
 
-        res.status(500).json({
+    if (code === 0) {
+      // Ensure all data is received before parsing
+      if (dataToSend) {
+        try {
+          // Parse the received JSON data
+          const parsedData = JSON.parse(dataToSend);
+          res.status(200).json({
+            status: 'success',
+            data: parsedData,
+          });
+        } catch (parseError) {
+          // Handle JSON parsing errors
+          console.error("JSON parsing error:", parseError.message);
+          res.status(500).json({
             status: 'error',
-            message: errorToSend || 'An error occurred while processing the file',
+            message: 'Failed to parse JSON output from Python script.',
+            error: parseError.message,
+            dataReceived: dataToSend,  // Send what was received
+          });
+        }
+      } else {
+        res.status(500).json({
+          status: 'error',
+          message: 'No data received from Python script.',
         });
-    }
-      fs.unlink(filePath, (err) => {
-          if (err) {
-              console.error('Error deleting the file:', err);
-          }
+      }
+    } else {
+      // If Python process exits with an error code
+      res.status(500).json({
+        status: 'error',
+        message: errorToSend || 'An error occurred while processing the file',
       });
+    }
+
+    // Clean up uploaded file
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error('Error deleting the file:', err);
+      }
+    });
   });
-}
+};
