@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Node.js project to extract and normalize data from Excel files",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
     "start": "npm run setup && nodemon src/server.js",
     "setup": "npm run check-python && npm run create-venv && npm run install-python-deps",

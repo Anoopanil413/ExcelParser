@@ -1,11 +1,17 @@
-const fs = require('fs');
+import fs from 'fs'
+import { processExcelFile } from '../utils/excelParcer.js';
+import {convertExcelToJson, convertExcelToJsonNew} from '../services/excelService.js';
+import path from 'path';
+import { spawn } from 'child_process';
 
-const { processExcelFile } = require('../utils/excelParcer');
-const { convertExcelToJson } = require('../services/excelService');
-const path = require('path');
-const { spawn } = require('child_process');
+import { fileURLToPath } from 'url';
 
-async function handleExcelUpload(req, res) {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+
+export async function handleExcelUpload(req, res) {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
@@ -18,13 +24,26 @@ async function handleExcelUpload(req, res) {
   }
 }
 
+export async function handleExcelUploadNew(req, res) {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
 
-const processExcel = async (req, res) => {
+  try {
+    const result = await convertExcelToJsonNew(req.file.path);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: 'Error processing Excel file' });
+  }
+}
+
+export const processExcel = async (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
   }
   
   const filePath = req.file.path;
+
   
   try {
     const allData = processExcelFile(filePath);
@@ -40,7 +59,7 @@ const processExcel = async (req, res) => {
   }
 };
 
-const pythonConverter = (req, res) => {
+export const pythonConverter = (req, res) => {
   const filePath = path.join(__dirname, '../../', req.file.path);
 
   const pythonScriptPath = path.join(__dirname,'..' ,'python_scripts', 'excel_parse.py');
@@ -54,15 +73,19 @@ const pythonExecutable = path.join(projectRoot, 'venv', 'Scripts', 'python.exe')
   let errorToSend = '';
 
   pythonProcess.stdout.on('data', (data) => {
-    console.log("datadata",data)
+    console.log("ctual data",data)
+
       dataToSend += data.toString();
   });
 
   pythonProcess.stderr.on('data', (data) => {
+    console.log("datadata",data)
+
       errorToSend += data.toString();
   });
 
   pythonProcess.on('close', (code) => {
+    console.log("code",code)
     if (code === 0) {
         try {
             const parsedData = JSON.parse(dataToSend);
@@ -92,4 +115,3 @@ const pythonExecutable = path.join(projectRoot, 'venv', 'Scripts', 'python.exe')
       });
   });
 }
-module.exports = { handleExcelUpload,processExcel,pythonConverter };

@@ -1,10 +1,15 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { processExcel, handleExcelUpload, pythonConverter } = require('./controllers/excelController');
-const fs = require('fs');
-const appConfig = require('./config/app.config');
-const upload = require('./middlewares/upload');
+
+import express from 'express';
+
+import {processExcel, handleExcelUpload, pythonConverter, handleExcelUploadNew} from './controllers/excelController.js';
+import appConfig from './config/app.config.js';
+import {upload} from './middlewares/upload.js';
+import path from 'path';
+
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 const app = express();
@@ -15,13 +20,14 @@ const app = express();
 app.post('/upload-excel', upload.single('file'), processExcel);
 
 app.post('/convert', upload.single('file'), handleExcelUpload);
+app.post('/convertnew', upload.single('file'), handleExcelUploadNew);
 
 
 app.post('/upload', upload.single('file'), pythonConverter);
 
 
 app.get('/', (req,res)=>{
-  res.json({message:"Hello World!"})
+  res.sendFile(path.join(__dirname, 'pages', 'index.html'));
 });
 
 

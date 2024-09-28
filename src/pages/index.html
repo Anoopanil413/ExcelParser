@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        pre {
+          background-color: #f4f4f4;
+          padding: 10px;
+          border-radius: 5px;
+          overflow-x: auto;
+        }
+      </style>
+      
+</head>
+<body>
+
+    <h1>Upload Files to Different Routes</h1>
+    <!-- <form id="form1" action="/upload-excel" method="POST" enctype="multipart/form-data">
+        <label for="file1">Upload Excel (Route: /upload-excel):</label>
+        <input type="file" name="file" id="file1" />
+        <button type="submit">Upload to /upload-excel</button>
+      </form> -->
+      
+      <form id="form2" action="/convert" method="POST" enctype="multipart/form-data">
+        <label for="file2">Upload File (Route: /convert):</label>
+        <input type="file" name="file" id="file2" />
+        <button type="submit">Upload to /convert</button>
+      </form>
+      
+      <form id="form3" action="/convertnew" method="POST" enctype="multipart/form-data">
+        <label for="file3">Upload File (Route: /convertnew):</label>
+        <input type="file" name="file" id="file3" />
+        <button type="submit">Upload to /convertnew</button>
+      </form>
+      
+      <form id="form4" action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="file4">Upload File (Route: /upload):</label>
+        <input type="file" name="file" id="file4" />
+        <button type="submit">Upload to /upload</button>
+      </form>
+
+      <h2>Filter JSON Data</h2>
+      <label for="filterKey">Enter Key:</label>
+      <input type="text" id="filterKey" placeholder="Enter key (e.g., 'Sheet1')" />
+      <br/>
+      <label for="columnNumber">Enter Column Number (e.g., 'col1'):</label>
+      <input type="text" id="columnNumber" placeholder="Enter column number" />
+      <button id="filterButton">Filter</button>
+      <br/>
+      
+      <pre id="filteredOutput"></pre>
+      
+
+
+
+    <pre id="jsonOutput"></pre>
+    <script>
+        let jsonResponseData = null; // Variable to store JSON response data
+        
+        document.querySelectorAll('form').forEach((form) => {
+          form.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent form submission and page reload
+      
+            const formData = new FormData(form); // Gather form data
+            const action = form.getAttribute('action'); // Get the form action URL
+      
+            try {
+              const response = await fetch(action, {
+                method: 'POST',
+                body: formData
+              });
+      
+              if (!response.ok) throw new Error('Server error: ' + response.statusText);
+      
+              jsonResponseData = await response.json(); // Store the JSON response data
+      
+              // Display the JSON in the <pre> tag
+              document.getElementById('jsonOutput').textContent = JSON.stringify(jsonResponseData, null, 2);
+      
+              // Allow the user to download the JSON response as a file
+              const blob = new Blob([JSON.stringify(jsonResponseData, null, 2)], { type: 'application/json' });
+              const downloadLink = document.createElement('a');
+              downloadLink.href = URL.createObjectURL(blob);
+              downloadLink.download = 'response.json';
+              downloadLink.textContent = 'Download JSON Response';
+              downloadLink.id = 'downloadLink';
+              document.body.appendChild(downloadLink);
+      
+            } catch (error) {
+              console.error('Error:', error);
+            }
+            
+          });
+        });
+      
+        // Filter Button Event Listener
+        document.getElementById('filterButton').addEventListener('click', function() {
+          const key = document.getElementById('filterKey').value; // Get the key input (e.g., 'Sheet1')
+          const columnKey = document.getElementById('columnNumber').value; // Get the column number (e.g., 'col1')
+      
+          if (!jsonResponseData || !key || !columnKey) {
+            document.getElementById('filteredOutput').textContent = 'Invalid input or no JSON data available.';
+            return;
+          }
+      
+          // Check if the key exists in the JSON data
+          if (!jsonResponseData[key] || !Array.isArray(jsonResponseData[key])) {
+            document.getElementById('filteredOutput').textContent = 'Key does not exist or is not an array.';
+            return;
+          }
+      
+          const filteredResults = jsonResponseData[key].map(obj => obj[columnKey]).filter(val => val !== undefined);
+      
+          // Display the filtered results in the <pre> tag
+          document.getElementById('filteredOutput').textContent = JSON.stringify(filteredResults, null, 2);
+        });
+      </script>
+      
+      
+      
+    
+</body>
+</html>
