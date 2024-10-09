@@ -11,7 +11,8 @@ def process_excel(file_path):
 
         for sheet_name, df in all_sheets.items():
             # Fill NaN values for all columns
-            df = df.fillna('')  # Replace NaN with empty string for all columns
+            df = df.fillna('')  # Replace NaN with empty string for all column
+            df = df.iloc[:290]
             
             # Convert the DataFrame to JSON-like dictionary format
             json_data[sheet_name] = df.to_dict(orient='records')
