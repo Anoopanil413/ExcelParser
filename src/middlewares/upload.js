@@ -18,25 +18,41 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
+const pdfstorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, appConfig.pdfUpload);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  if (ext !== '.xlsx' && ext !== '.xls') {
+  if ( ext !== '.xlsx' && ext !== '.xls') {
+    return cb(new Error('Only Excel files are allowed'));
+  }
+  cb(null, true);
+};
+const pdffileFilter = (req, file, cb) => {
+  const ext = path.extname(file.originalname).toLowerCase();
+  if ( ext !=='.pdf') {
     return cb(new Error('Only Excel files are allowed'));
   }
   cb(null, true);
 };
 
-// const uploadDir = path.join(__dirname, '../uploads');
-// console.log(uploadDir,"uploadDir")
-// if (!fs.existsSync(uploadDir)) {
-//   fs.mkdirSync(uploadDir, { recursive: true });
-// }
 
 
 
 export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 50 } 
+});
+
+export const uploadPdf = multer({
+  storage: pdfstorage,
+  fileFilter: pdffileFilter,
   limits: { fileSize: 1024 * 1024 * 50 } 
 });

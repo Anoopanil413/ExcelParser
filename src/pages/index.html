@@ -40,7 +40,24 @@
         <input type="file" name="file" id="file4" />
         <button type="submit">Upload to /upload</button>
       </form>
-
+      <form id="form5" action="/pdf" method="POST" enctype="multipart/form-data">
+        <label for="file4">Upload File (Route: /pdf):</label>
+        <input type="file" name="file" id="file5" />
+        <button type="submit">Upload pdf to /pdfparser</button>
+      </form>
+      
+      <form id="form6" action="/pdftest" method="POST" enctype="multipart/form-data">
+        <label for="file7">Upload File (Route: /pdftest):</label>
+        <input type="file" name="file" id="file6" />
+        <button type="submit">Upload pdf to /tesseract pdf</button>
+      </form>
+      
+      <form id="form7" action="/pdftojson" method="POST" enctype="multipart/form-data">
+        <label for="file7">Upload File (Route: /pdftest):</label>
+        <input type="file" name="file" id="file7" />
+        <button type="submit">Upload pdf to /tesseract pdf</button>
+      </form>
+      
       <h2>Filter JSON Data</h2>
       <label for="filterKey">Enter Key:</label>
       <input type="text" id="filterKey" placeholder="Enter key (e.g., 'Sheet1')" />
@@ -61,7 +78,7 @@
         
         document.querySelectorAll('form').forEach((form) => {
           form.addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent form submission and page reload
+            event.preventDefault(); 
       
             const formData = new FormData(form); // Gather form data
             const action = form.getAttribute('action'); // Get the form action URL
