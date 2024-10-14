@@ -9,6 +9,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { pdfParserCont, pdfParserEffect } from './controllers/pdfController.js';
 import { precisePdfExtractor } from './controllers/pdftojson.js';
+import { handleAdobeConverter } from './controllers/adobeExtracter.js';
+
+import 'dotenv/config'
+// dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +35,7 @@ app.post('/upload', upload.single('file'), pythonConverter);
 app.post('/pdf',uploadPdf.single('file'), pdfParserCont)
 app.post('/pdftest',uploadPdf.single('file'), pdfParserEffect)
 app.post('/pdftojson',uploadPdf.single('file'), precisePdfExtractor)
+app.post('/adobe',uploadPdf.single('file'), handleAdobeConverter)
 
 
 app.get('/', (req,res)=>{
